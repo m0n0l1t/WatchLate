@@ -1,11 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h1>Hello, user</h1>
-<a href="{{url_for('main')}}">Main page</a>
-</body>
-</html>
+{%  extends 'base.html' %}
+
+{% block title  %}
+    Index page
+{% endblock %}
+
+{% block content_title  %}
+    Index page
+{% endblock %}
+
+{% block content  %}
+    Some content
+{% endblock %}

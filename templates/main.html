@@ -11,9 +11,15 @@
     <input type="text" name="tag">
     <button type="submit">Add message</button>
 </form>
+
 <h3>Messages List</h3>
 {% for message in messages %}
-<div>{{ message.text}}&nbsp;<i>{{ message.tag }}</i></div>
+<div>{{ message.text}}&nbsp;
+    {% for tag in message.tags %}
+    <b>#{{ tag.text }}</b>
+    {% endfor %}
+</div>
 {% endfor %}
+
 </body>
 </html>
