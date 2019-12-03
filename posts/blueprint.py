@@ -53,6 +53,21 @@ def index():
     return render_template('posts/index.html', pages=pages)
 
 
+@posts.route('/<slug>/edit/', methods=['POST','GET'])
+def edit_post(slug):
+    post = Post.query.filter(Post.slug == slug).first()
+
+    if request.method == 'POST':
+        form = PostForm(formdata=request.form, obj=post)
+        form.populate_obj(post)
+        db.session.commit()
+
+        return redirect(url_for('posts.post_detail', slug=post.slug))
+
+    form = PostForm(obj=post)
+    return render_template('posts/edit_post.html', post=post, form=form)
+
+
 @posts.route('/<slug>')
 def post_detail(slug):
     post = Post.query.filter(Post.slug == slug).first()

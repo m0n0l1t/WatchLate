@@ -48,4 +48,4 @@ class Tag(db.Model):
         self.slug = slugify(self.name)
 
     def __repr__(self):
-        return '<Tag id: {}, title: {}>'.format(self.id, self.title)
+        return '{}'.format(self.name)
