@@ -14,7 +14,6 @@ posts = Blueprint('posts', __name__, template_folder='templates')
 
 @posts.route('/create', methods=['POST', 'GET'])
 def create_post():
-
     if request.method == 'POST':
         title = request.form.get['title']
         body = request.form['body']
@@ -37,11 +36,21 @@ def create_post():
 def index():
     q = request.args.get('q')
 
+    page = request.get('page')
+
+    if page and page.isdigit():
+        page = int(page)
+    else:
+        page = 1
+
     if q:
-        posts = Post.query.filter(Post.title.contains(q) | Post.body.contains(q)).all()
+        posts = Post.query.filter(Post.title.contains(q) | Post.body.contains(q)) # .all()
     else:
         posts = Post.query.order_by(Post.created.desc())
-    return render_template('posts/index.html', posts=posts)
+
+    pages = posts.paginate(page=page, per_page=5)
+
+    return render_template('posts/index.html', pages=pages)
 
 
 @posts.route('/<slug>')
