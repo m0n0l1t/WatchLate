@@ -4,8 +4,17 @@ import re
 
 
 def slugify(s):
-    pattern = r'[^w+]'
-    return re.sub(pattern, '-', s)
+    pattern = r'[^\w+]'
+    format_str = re.sub(pattern, '-', s).lower()
+    while '--' in format_str:
+        format_str = format_str.replace('--', '-')
+    return format_str
+
+
+post_tags = db.Table('post_tags',
+                     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+                     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+                     )
 
 
 class Post(db.Model):
@@ -19,6 +28,8 @@ class Post(db.Model):
         super(Post, self).__init__(*args, **kwargs)
         self.generate_slug()
 
+    tags = db.relationship('Tag', secondary=post_tags, backref=db.backref('posts', lazy='dynamic'))
+
     def generate_slug(self):
         if self.title:
             self.slug = slugify(self.title)
@@ -26,3 +37,15 @@ class Post(db.Model):
     def __repr__(self):
         return '<Post id: {}, title: {}>'.format(self.id, self.title)
 
+
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    slug = db.Column(db.String(100), unique=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Tag, self).__init__(*args, **kwargs)
+        self.slug = slugify(self.name)
+
+    def __repr__(self):
+        return '<Tag id: {}, title: {}>'.format(self.id, self.title)
