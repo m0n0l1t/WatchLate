@@ -1,24 +1,24 @@
 {%  extends 'base.html' %}
 
 {% block title  %}
-    Create new post
+    New user
 {% endblock %}
 
 {% block content_title  %}
-    New post
+    Register now
 
 {% endblock %}
 
 {% block content  %}
     <div class="col-md-6">
-    <form action="{{ url_for('posts.create_post') }}" method="POST">
+    <form action="{{ url_for('users.create_user') }}" method="POST">
 
     {% for field in form %}
 
         <div class="form-group">
 
 
-            {{ field.label('control-label') }}
+            {{ field.label(class='control-label') }}
             {{ field(class='form-control') }}
         </div>
 

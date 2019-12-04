@@ -27,7 +27,7 @@
 
             {%  for pag in pages.iter_pages() %}
             <li {% if page == pages.page %} class="active" {% endif %}>
-                <a class="page-link" href="./page={{ page }}">{{ page }}</a>
+                <a class="page-link" href="./page={{ page }}">{{ page }}<span class="sr-only">(current)</span></a>
             </li>
             {% endfor %}
 

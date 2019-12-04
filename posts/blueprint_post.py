@@ -19,7 +19,7 @@ posts = Blueprint('posts', __name__, template_folder='templates')
 def create_post():
 
     if request.method == 'POST':
-        title = request.form.get['title']
+        title = request.form['title']
         body = request.form['body']
 
         try:

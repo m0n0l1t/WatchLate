@@ -34,19 +34,19 @@ class HomeAdminView(AdminMixin, AdminIndexView):
     pass
 
 
-class PostAdminView(AdminMixin,BaseModelView):
+class PostAdminView(AdminMixin, BaseModelView):
     form_columns = ['title', 'body', 'tags']
 
 
-class TagAdminView(AdminMixin,BaseModelView):
-    form_columns = ['name', 'post']
+class TagAdminView(AdminMixin, BaseModelView):
+    form_columns = ['name', 'posts']
 
 
 admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name='Home'))
 admin.add_view(AdminView(User, db.session))
 admin.add_view(AdminView(Role, db.session))
-admin.add_view(AdminView(Post, db.session))
-admin.add_view(AdminView(Tag, db.session))
+admin.add_view(PostAdminView(Post, db.session))
+admin.add_view(TagAdminView(Tag, db.session))
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
