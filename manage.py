@@ -1,5 +1,5 @@
 from app import manager
-from main import *
+from start import *
 
 
 if __name__ == '__main__':

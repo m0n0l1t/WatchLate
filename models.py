@@ -10,6 +10,7 @@ from flask import current_app
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 def slugify(s):
     pattern = r'[^\w+]'
     format_str = re.sub(pattern, '-', s).lower()
@@ -64,6 +65,7 @@ class Post(db.Model):
     slug = db.Column(db.String(140), unique=True)
     body = db.Column(db.Text)
     created = db.Column(db.DateTime, default=datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
@@ -76,14 +78,13 @@ class Post(db.Model):
             self.slug = slugify(self.title)
 
     def __repr__(self):
-        return '<Post id: {}, title: {}>'.format(self.id, self.title)
+        return f"Post('{self.title}', '{self.date_posted}')"
 
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     slug = db.Column(db.String(100), unique=True)
-
 
     def __init__(self, *args, **kwargs):
         super(Tag, self).__init__(*args, **kwargs)
@@ -93,13 +94,7 @@ class Tag(db.Model):
         return '{}'.format(self.name)
 
 
-roles_users = db.Table('roles_users',
-                       db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-                       db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
-                       )
-
-
-class Role(db.Model, UserMixin):
+class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
     description = db.Column(db.String(255))
