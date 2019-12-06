@@ -2,7 +2,7 @@ from app import db, login_manager
 from datetime import datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 import re
-from flask_security import UserMixin, RoleMixin
+from flask_login import UserMixin
 from flask import current_app
 
 
@@ -17,18 +17,6 @@ def slugify(s):
     while '--' in format_str:
         format_str = format_str.replace('--', '-')
     return format_str
-
-
-roles_users = db.Table('roles_users',
-                       db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-                       db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
-                       )
-
-
-post_tags = db.Table('post_tags',
-                     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
-                     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
-                     )
 
 
 class User(db.Model, UserMixin):
@@ -60,11 +48,10 @@ class User(db.Model, UserMixin):
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140))
-    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     youtube_link = db.Column(db.String(140))
     slug = db.Column(db.String(140), unique=True)
     body = db.Column(db.Text)
-    created = db.Column(db.DateTime, default=datetime.now())
+    date_posted = db.Column(db.DateTime, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __init__(self, *args, **kwargs):
@@ -81,20 +68,4 @@ class Post(db.Model):
         return f"Post('{self.title}', '{self.date_posted}')"
 
 
-class Tag(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    slug = db.Column(db.String(100), unique=True)
 
-    def __init__(self, *args, **kwargs):
-        super(Tag, self).__init__(*args, **kwargs)
-        self.slug = slugify(self.name)
-
-    def __repr__(self):
-        return '{}'.format(self.name)
-
-
-class Role(db.Model, RoleMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True)
-    description = db.Column(db.String(255))
