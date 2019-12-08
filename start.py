@@ -1,13 +1,16 @@
-from admin import *
+# from admin import *
+from app import app
 from posts.blueprint_post import posts
 from users.blueprint_user import users
 from main.blueprint_main import main
+from messages.blueprint_messages import messages
 
 import view
 
-app.register_blueprint(posts, url_prefix='/blog')
-app.register_blueprint(users, url_prefix='/profile')
-app.register_blueprint(main, url_prefix='/main')
+app.register_blueprint(posts)
+app.register_blueprint(users)
+app.register_blueprint(main)
+app.register_blueprint(messages)
 
 
 if __name__ == '__main__':

@@ -6,14 +6,11 @@ from .forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                    RequestResetForm, ResetPasswordForm)
 from .utils import save_picture, send_reset_email
 
-
 users = Blueprint('users', __name__, template_folder='templates')
 
 
-@users.route('/register', methods=['POST', 'GET'])
+@users.route("/register", methods=['GET', 'POST'])
 def register():
-
-
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RegistrationForm()
@@ -24,7 +21,7 @@ def register():
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('users.login'))
-    return render_template('users/register.html', form=form)
+    return render_template('users/register.html', title='Register', form=form)
 
 
 @users.route("/login", methods=['GET', 'POST'])
@@ -70,7 +67,7 @@ def account():
                            image_file=image_file, form=form)
 
 
-@users.route("/<string:username>")
+@users.route("/user/<string:username>")
 def user_posts(username):
     page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
@@ -109,8 +106,3 @@ def reset_token(token):
         flash('Your password has been updated! You are now able to log in', 'success')
         return redirect(url_for('users.login'))
     return render_template('users/reset_token.html', title='Reset Password', form=form)
-
-
-
-
-

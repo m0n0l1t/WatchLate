@@ -1,19 +1,25 @@
 from flask import (render_template, url_for, flash,
                    redirect, request, abort, Blueprint)
 from flask_login import current_user, login_required
-from models import db
+from app import db
 from models import Post
-from posts.forms import PostForm
+from.forms import PostForm
 
-posts = Blueprint('posts', __name__)
+posts = Blueprint('posts', __name__, template_folder='templates')
 
 
 @posts.route("/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
+    link = form.youtube_link.data.split('/')
+    youtube = link[len(link)-1]
+    url = '''https://www.youtube.com/embed/'''+youtube
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        post = Post(title=form.title.data,
+                    content=form.content.data,
+                    youtube_link=url,
+                    author=current_user)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been created!', 'success')
@@ -25,7 +31,7 @@ def new_post():
 @posts.route("/<int:post_id>")
 def post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template('posts/index.html', title=post.title, post=post)
+    return render_template('posts/post.html', title=post.title, post=post)
 
 
 @posts.route("/<int:post_id>/update", methods=['GET', 'POST'])
@@ -36,15 +42,19 @@ def update_post(post_id):
         abort(403)
     form = PostForm()
     if form.validate_on_submit():
+        link = form.youtube_link.data.split('/')
+        youtube = link[len(link) - 1]
+        url = '''https://www.youtube.com/embed/''' + youtube
         post.title = form.title.data
-        post.body = form.body.data
-        post.youtube_link = form.youtube.data
+        post.content = form.content.data
+        post.youtube_link = url
         db.session.commit()
         flash('Your post has been updated!', 'success')
         return redirect(url_for('posts.post', post_id=post.id))
     elif request.method == 'GET':
         form.title.data = post.title
-        form.body.data = post.body
+        form.content.data = post.content
+        form.youtube_link.data = post.youtube_link
     return render_template('posts/create_post.html', title='Update Post',
                            form=form, legend='Update Post')
 

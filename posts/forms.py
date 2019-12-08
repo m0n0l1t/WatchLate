@@ -5,6 +5,6 @@ from wtforms.validators import DataRequired
 
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
-    body = TextAreaField('Content', validators=[DataRequired()])
-    youtube = StringField('YouTube link', validators=[DataRequired()])
+    content = TextAreaField('Content', validators=[DataRequired()])
+    youtube_link = StringField('YouTube link', validators=[DataRequired()])
     submit = SubmitField('Post')
