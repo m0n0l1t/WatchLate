@@ -12,10 +12,11 @@ posts = Blueprint('posts', __name__, template_folder='templates')
 @login_required
 def new_post():
     form = PostForm()
-    link = form.youtube_link.data.split('/')
-    youtube = link[len(link)-1]
-    url = '''https://www.youtube.com/embed/'''+youtube
+
     if form.validate_on_submit():
+        link = form.youtube_link.data.split('/')
+        youtube = link[len(link) - 1]
+        url = '''https://www.youtube.com/embed/''' + youtube
         post = Post(title=form.title.data,
                     content=form.content.data,
                     youtube_link=url,
@@ -38,10 +39,12 @@ def post(post_id):
 @login_required
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)
+
     if post.author != current_user:
         abort(403)
     form = PostForm()
     if form.validate_on_submit():
+
         link = form.youtube_link.data.split('/')
         youtube = link[len(link) - 1]
         url = '''https://www.youtube.com/embed/''' + youtube

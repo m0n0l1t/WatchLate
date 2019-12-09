@@ -1,10 +1,7 @@
-# from models import *
+from models import *
 from flask_admin import Admin
 from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
-
-from flask_security import SQLAlchemyUserDatastore
-from flask_security import Security
 from flask_login import current_user
 
 from app import app
@@ -17,7 +14,7 @@ class AdminMixin:
         return current_user.has_role('admin')
 
     def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('security.login', next=request.url))
+        return redirect(url_for('users.login', next=request.url))
 
 
 class BaseModelView(ModelView):
@@ -34,15 +31,18 @@ class HomeAdminView(AdminMixin, AdminIndexView):
     pass
 
 
-class PostAdminView(AdminMixin, BaseModelView):
-    form_columns = ['title', 'content', ]
+class PostAdminView(AdminMixin,BaseModelView):
+    form_columns = ['title', 'youtube_link', 'content']
 
 
-admin = Admin(app, 'WL', url='/', index_view=HomeAdminView(name='Home'))
+class TagAdminView(AdminMixin,BaseModelView):
+    form_columns = ['name', 'post']
+
+
+admin = Admin(app, 'FlaskApp', url='/', index_view=HomeAdminView(name='Home'))
 admin.add_view(AdminView(User, db.session))
 admin.add_view(AdminView(Role, db.session))
 admin.add_view(AdminView(Post, db.session))
 
 
-user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore)
+

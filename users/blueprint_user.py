@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 from app import db, bcrypt
-from models import User, Post
+from models import User, Post, Message
 from .forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                    RequestResetForm, ResetPasswordForm)
 from .utils import save_picture, send_reset_email
@@ -75,6 +75,16 @@ def user_posts(username):
         .order_by(Post.date_posted.desc())\
         .paginate(page=page, per_page=5)
     return render_template('users/user_posts.html', posts=posts, user=user)
+
+
+@users.route("/msg/<string:username>")
+def user_messages(username):
+    page = request.args.get('page', 1, type=int)
+    user = User.query.filter_by(username=username).first_or_404()
+    messages = Message.query.filter_by(author=user)\
+        .order_by(Message.timestamp.desc())\
+        .paginate(page=page, per_page=5)
+    return render_template('users/user_messages.html', messages=messages, user=user)
 
 
 @users.route("/reset_password", methods=['GET', 'POST'])

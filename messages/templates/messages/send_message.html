@@ -2,10 +2,34 @@
 
 
 {% block content %}
-    <h1>{{ _('Send Message to %(recipient)s', recipient=recipient) }}</h1>
-    <div class="row">
-        <div class="col-md-4">
-            {{ wtf.quick_form(form) }}
+{{ form.hidden_tag() }}
+
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+     <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + img) }}">
+    {{ recipient }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <div class="form-group">
+                {{ form.message.label(class="form-control-label") }}
+
+                {% if form.message.errors %}
+                    {{ form.message(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.message.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.message(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
         </div>
-    </div>
+    </form>
+</div>
 {% endblock %}

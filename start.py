@@ -7,10 +7,10 @@ from messages.blueprint_messages import messages
 
 import view
 
-app.register_blueprint(posts)
+app.register_blueprint(posts, url_prefix='/posts')
 app.register_blueprint(users)
 app.register_blueprint(main)
-app.register_blueprint(messages)
+app.register_blueprint(messages, url_prefix='/messages')
 
 
 if __name__ == '__main__':

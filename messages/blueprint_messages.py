@@ -1,17 +1,17 @@
 from flask import (render_template, url_for, flash,
-                   redirect, request, current_app, Blueprint)
+                   redirect, request, abort, Blueprint)
 from flask_login import current_user, login_required
 from app import db
 from models import Message, User
 from .forms import MessageForm
-from datetime import datetime
 
 messages = Blueprint('messages', __name__, template_folder='templates')
 
 
-@messages.route('/send_message/<recipient>', methods=['GET', 'POST'])
+@messages.route("/new/<username>/", methods=['GET', 'POST'])
 @login_required
-def send_message(recipient):
+def send_message(username):
+    recipient = username
     user = User.query.filter_by(username=recipient).first_or_404()
     form = MessageForm()
     if form.validate_on_submit():
@@ -20,23 +20,20 @@ def send_message(recipient):
         db.session.add(msg)
         db.session.commit()
         flash('Your message has been sent.')
-        return redirect(url_for('users.account', username=recipient))
-    return render_template('messages/send_message.html', title='Send Message',
-                           form=form, recipient=recipient)
+        return redirect(url_for('users.user_messages', username=recipient))
+    return render_template('messages/send_message.html', form=form, recipient=recipient, img=user.image_file)
 
 
-@messages.route('/')
+@messages.route("/<int:message_id>")
+@login_required
+def message(message_id):
+    message = Message.query.get_or_404(message_id)
+    return render_template('messages/message.html', message=message)
+
+
+@messages.route("/")
 @login_required
 def index():
-    current_user.last_message_read_time = datetime.utcnow()
-    db.session.commit()
     page = request.args.get('page', 1, type=int)
-    messages = current_user.messages_received.order_by(
-        Message.timestamp.desc()).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('messages.index', page=messages.next_num) \
-        if messages.has_next else None
-    prev_url = url_for('messages.index', page=messages.prev_num) \
-        if messages.has_prev else None
-    return render_template('messages/index.html', messages=messages.items,
-                           next_url=next_url, prev_url=prev_url)
+    messages = Message.query.order_by(Message.timestamp.desc()).paginate(page=page, per_page=5)
+    return render_template('messages/_index.html', messages=messages)
