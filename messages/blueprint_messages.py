@@ -27,8 +27,9 @@ def send_message(username):
 @messages.route("/<int:message_id>")
 @login_required
 def message(message_id):
-    message = Message.query.get_or_404(message_id)
+    message = current_user.Message.query.get_or_404(message_id)
     return render_template('messages/message.html', message=message)
+
 
 
 @messages.route("/")

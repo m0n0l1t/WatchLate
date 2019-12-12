@@ -61,6 +61,26 @@ def update_post(post_id):
     return render_template('posts/create_post.html', title='Update Post',
                            form=form, legend='Update Post')
 
+@posts.route('/')
+def index():
+    q = request.args.get('q')
+
+    page = request.get('page')
+
+    if page and page.isdigit():
+        page = int(page)
+    else:
+        page = 1
+
+    if q:
+        posts = Post.query.filter(Post.title.contains(q) | Post.body.contains(q))  # .all()
+    else:
+        posts = Post.query.order_by(Post.created.desc())
+
+    pages = posts.paginate(page=page, per_page=5)
+
+    return render_template('posts/index.html', pages=pages)
+
 
 @posts.route("/<int:post_id>/delete", methods=['POST'])
 @login_required
